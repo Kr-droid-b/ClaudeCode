@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
     })
 
     // Create Stripe checkout session
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || req.nextUrl.origin
     const session = await getStripe().checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -75,8 +76,8 @@ export async function POST(req: NextRequest) {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/services/${service}`,
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/services/${service}`,
       customer_email: email,
       metadata: {
         orderId: order.id,
