@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  email           String
+  service         String
+  status          String   @default("pending")
+  stripeSessionId String?  @unique
+  amount          Int
+  currency        String   @default("BGN")
+  inputData       String?
+  outputFile      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

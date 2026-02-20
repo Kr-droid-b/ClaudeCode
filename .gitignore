@@ -1,0 +1,6 @@
+jobready/node_modules/
+jobready/.env
+jobready/prisma/dev.db
+jobready/prisma/dev.db-journal
+jobready/.next/
+jobready/uploads/
