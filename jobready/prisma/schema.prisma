@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Order {
@@ -15,8 +16,12 @@ model Order {
   stripeSessionId String?  @unique
   amount          Int
   currency        String   @default("BGN")
-  inputData       String?
+  inputData       String?  @db.Text
   outputFile      String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
 }
