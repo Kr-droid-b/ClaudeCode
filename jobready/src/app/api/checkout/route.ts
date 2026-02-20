@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, SERVICES, ServiceType } from '@/lib/stripe'
+
+export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
 import { rateLimit } from '@/lib/rate-limit'
 import { writeFile, mkdir } from 'fs/promises'
