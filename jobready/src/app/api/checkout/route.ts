@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     // Save uploaded file if present
     let filePath: string | null = null
     if (file && file.size > 0) {
-      const uploadsDir = path.join(process.cwd(), 'uploads')
+      const uploadsDir = '/tmp/uploads'
       await mkdir(uploadsDir, { recursive: true })
       const buffer = Buffer.from(await file.arrayBuffer())
       const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
