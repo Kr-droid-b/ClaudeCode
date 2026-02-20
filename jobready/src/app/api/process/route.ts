@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+
+export const dynamic = 'force-dynamic'
 import { optimizeCV, generateCoverLetter, generateLinkedInProfile } from '@/lib/ai'
 import { generateCVPdf, generateCoverLetterPdf, generateLinkedInPdf } from '@/lib/pdf'
 import { sendResultEmail } from '@/lib/email'

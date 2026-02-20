@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 function checkAuth(req: NextRequest): boolean {
   const authHeader = req.headers.get('authorization')
   if (!authHeader || !authHeader.startsWith('Basic ')) {
