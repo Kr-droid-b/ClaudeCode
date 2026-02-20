@@ -1,6 +1,16 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let _resend: Resend | null = null
+
+function getResend(): Resend {
+  if (!_resend) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY environment variable is not set')
+    }
+    _resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return _resend
+}
 
 export async function sendResultEmail(
   to: string,
@@ -17,7 +27,7 @@ export async function sendResultEmail(
 
   const serviceName = serviceNames[service] || service
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: 'JobReady.bg <noreply@jobready.bg>',
     to,
     subject: `Вашият ${serviceName} е готов! | JobReady.bg`,
