@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       line_items: [
         {
           price_data: {
-            currency: 'bgn',
+            currency: 'eur',
             product_data: {
               name: serviceInfo.name,
               description: serviceInfo.description,
