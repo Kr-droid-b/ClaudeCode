@@ -1,5 +1,9 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
 
+function sanitize(text: string): string {
+  return text.replace(/[\r\n\t]/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
 interface CVData {
   summary: string
   experience: string[]
@@ -37,7 +41,7 @@ export async function generateCVPdf(data: CVData): Promise<Buffer> {
   function drawText(text: string, x: number, size: number, color: typeof navy, useBold = false) {
     const f = useBold ? boldFont : font
     const maxWidth = 595 - margin * 2
-    const words = text.split(' ')
+    const words = sanitize(text).split(' ')
     let line = ''
 
     for (const word of words) {
@@ -179,7 +183,7 @@ export async function generateCoverLetterPdf(text: string): Promise<Buffer> {
   const paragraphs = text.split('\n').filter((p) => p.trim())
   for (const para of paragraphs) {
     const maxWidth = 595 - margin * 2
-    const words = para.split(' ')
+    const words = sanitize(para).split(' ')
     let line = ''
 
     for (const word of words) {
@@ -249,7 +253,7 @@ export async function generateLinkedInPdf(data: {
 
   function drawWrapped(text: string, x: number, size: number, color: typeof navy, f = font) {
     const maxWidth = 595 - margin * 2
-    const words = text.split(' ')
+    const words = sanitize(text).split(' ')
     let line = ''
     for (const word of words) {
       const testLine = line ? `${line} ${word}` : word
