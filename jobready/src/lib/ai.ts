@@ -21,7 +21,7 @@ export async function optimizeCV(cvText: string): Promise<{
   fullText: string
 }> {
   const message = await getAnthropic().messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 4096,
     messages: [
       {
@@ -79,7 +79,7 @@ export async function generateCoverLetter(input: {
       : 'Write the cover letter in professional English.'
 
   const message = await getAnthropic().messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 2048,
     messages: [
       {
@@ -127,7 +127,7 @@ export async function generateLinkedInProfile(input: {
   experience: string[]
 }> {
   const message = await getAnthropic().messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 4096,
     messages: [
       {
