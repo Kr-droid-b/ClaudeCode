@@ -123,7 +123,7 @@ async function processCombo(order: { id: string; email: string; inputData: strin
   const resend = new Resend(process.env.RESEND_API_KEY)
 
   await resend.emails.send({
-    from: 'JobReady.bg <noreply@jobready.bg>',
+    from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
     to: order.email,
     subject: 'Вашият Комбо пакет е готов! | JobReady.bg',
     html: `
