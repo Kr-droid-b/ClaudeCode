@@ -28,7 +28,7 @@ export async function sendResultEmail(
   const serviceName = serviceNames[service] || service
 
   await getResend().emails.send({
-    from: 'JobReady.bg <noreply@jobready.bg>',
+    from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
     to,
     subject: `Вашият ${serviceName} е готов! | JobReady.bg`,
     html: `
