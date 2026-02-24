@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { waitUntil } from '@vercel/functions'
 import { getStripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import Stripe from 'stripe'
@@ -42,15 +43,17 @@ export async function POST(req: NextRequest) {
         data: { status: 'paid' },
       })
 
-      // Trigger async processing
+      // Trigger processing — waitUntil keeps the function alive after response
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-      fetch(`${baseUrl}/api/process`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId }),
-      }).catch((err) => {
-        console.error('Failed to trigger processing:', err)
-      })
+      waitUntil(
+        fetch(`${baseUrl}/api/process`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId }),
+        }).catch((err) => {
+          console.error('Failed to trigger processing:', err)
+        })
+      )
     } catch (err) {
       console.error('Failed to update order:', err)
       return NextResponse.json({ error: 'Processing error' }, { status: 500 })
