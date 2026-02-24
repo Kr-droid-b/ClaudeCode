@@ -5,21 +5,18 @@ export const dynamic = 'force-dynamic'
 import { optimizeCV, generateCoverLetter, generateLinkedInProfile } from '@/lib/ai'
 import { generateCVPdf, generateCoverLetterPdf, generateLinkedInPdf } from '@/lib/pdf'
 import { sendResultEmail } from '@/lib/email'
-import { readFile, unlink } from 'fs/promises'
 import mammoth from 'mammoth'
 
-async function extractTextFromFile(filePath: string): Promise<string> {
-  const buffer = await readFile(filePath)
+async function extractTextFromBase64(fileBase64: string, fileName: string): Promise<string> {
+  const buffer = Buffer.from(fileBase64, 'base64')
 
-  if (filePath.endsWith('.docx')) {
+  if (fileName.endsWith('.docx')) {
     const result = await mammoth.extractRawText({ buffer })
     return result.value
   }
 
   // For PDF, do a basic text extraction
-  // pdf-lib doesn't support text extraction, so we use a simple approach
   const text = buffer.toString('utf-8')
-  // Try to extract readable text from PDF binary
   const cleanText = text
     .replace(/[^\x20-\x7E\n\r\t\u0400-\u04FF\u00C0-\u024F]/g, ' ')
     .replace(/\s+/g, ' ')
@@ -34,17 +31,12 @@ async function extractTextFromFile(filePath: string): Promise<string> {
 
 async function processCV(order: { id: string; email: string; inputData: string }) {
   const input = JSON.parse(order.inputData)
-  const cvText = await extractTextFromFile(input.filePath)
+  const cvText = await extractTextFromBase64(input.fileBase64, input.fileName)
 
   const optimized = await optimizeCV(cvText)
   const pdfBuffer = await generateCVPdf(optimized)
 
   await sendResultEmail(order.email, 'cv-optimizer', pdfBuffer, 'CV_ATS_Optimized.pdf')
-
-  // Clean up uploaded file
-  try {
-    await unlink(input.filePath)
-  } catch {}
 
   return pdfBuffer
 }
@@ -93,7 +85,7 @@ async function processCombo(order: { id: string; email: string; inputData: strin
   const formData = input.formData
 
   // Process CV
-  const cvText = await extractTextFromFile(input.filePath)
+  const cvText = await extractTextFromBase64(input.fileBase64, input.fileName)
   const optimizedCV = await optimizeCV(cvText)
   const cvPdf = await generateCVPdf(optimizedCV)
 
@@ -150,10 +142,6 @@ async function processCombo(order: { id: string; email: string; inputData: strin
     ],
   })
 
-  // Clean up uploaded file
-  try {
-    await unlink(input.filePath)
-  } catch {}
 }
 
 export async function POST(req: NextRequest) {
