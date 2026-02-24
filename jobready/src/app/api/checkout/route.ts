@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getStripe, SERVICES, ServiceType } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import { rateLimit } from '@/lib/rate-limit'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,22 +26,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Невалидни данни.' }, { status: 400 })
     }
 
-    // Save uploaded file if present
-    let filePath: string | null = null
+    // Encode file as base64 for storage in DB (shared across serverless instances)
+    let fileBase64: string | null = null
+    let fileName: string | null = null
     if (file && file.size > 0) {
-      const uploadsDir = '/tmp/uploads'
-      await mkdir(uploadsDir, { recursive: true })
       const buffer = Buffer.from(await file.arrayBuffer())
-      const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-      filePath = path.join(uploadsDir, fileName)
-      await writeFile(filePath, buffer)
+      fileBase64 = buffer.toString('base64')
+      fileName = file.name
     }
 
     const serviceInfo = SERVICES[service]
 
     // Store input data for processing after payment
     const inputData = JSON.stringify({
-      filePath,
+      fileBase64,
+      fileName,
       formData: data ? JSON.parse(data) : null,
     })
 
